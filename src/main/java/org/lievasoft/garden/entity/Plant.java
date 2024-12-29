@@ -1,7 +1,8 @@
 package org.lievasoft.garden.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Setter;
 
 @Setter
 @Entity
@@ -14,7 +15,14 @@ public class Plant {
     @Setter(AccessLevel.NONE)
     private int id;
 
+    @Column(unique = true, nullable = false, length = 50)
     private String commonName;
+
+    @Column(length = 50)
+    private String  scientificName;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Setter(AccessLevel.NONE)
     @Version
