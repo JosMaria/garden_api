@@ -1,5 +1,7 @@
 package org.lievasoft.garden;
 
+import org.lievasoft.garden.entity.Plant;
+import org.lievasoft.garden.entity.Status;
 import org.lievasoft.garden.repository.PlantJpaRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,9 +18,17 @@ public class GardenApplication {
     @Bean
     CommandLineRunner commandLineRunner(PlantJpaRepository plantRepository) {
         return args -> {
+            Plant plant = new Plant();
+            plant.setCommonName("acacia");
+            plant.setStatus(Status.ABSENT);
+            plant.setScientificName("acacia scientific name");
+            plantRepository.save(plant);
+
+            plantRepository.findAllCardsPaginated();
+            
 //            plantRepository.findById(1L)
 //                    .ifPresent(plantObtained -> {so
-//            });
+//            });(
 
 
 

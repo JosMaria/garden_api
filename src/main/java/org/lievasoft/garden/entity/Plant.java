@@ -3,7 +3,29 @@ package org.lievasoft.garden.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Setter;
+import org.lievasoft.garden.dto.CardResponseDto;
 
+@NamedNativeQuery(
+        name = "findAllCardsPaginated",
+        query = """
+            SELECT id, common_name, status
+            FROM plants
+        """,
+        resultSetMapping = "CardPageMapped"
+)
+@SqlResultSetMapping(
+        name = "CardPageMapped",
+        classes = {
+                @ConstructorResult(
+                        targetClass = CardResponseDto.class,
+                        columns = {
+                                @ColumnResult(name = "id", type = Long.class),
+                                @ColumnResult(name = "common_name", type = String.class),
+                                @ColumnResult(name = "status", type = Status.class),
+                        }
+                )
+        }
+)
 @Setter
 @Entity
 @Table(name = "plants")
@@ -13,7 +35,7 @@ public class Plant {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "plant_seq")
     @SequenceGenerator(name = "plant_seq", sequenceName = "plant_sequence", allocationSize = 1)
     @Setter(AccessLevel.NONE)
-    private int id;
+    private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
     private String commonName;
