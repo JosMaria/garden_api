@@ -1,6 +1,5 @@
 package org.lievasoft.garden.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.service.CatalogService;
 import org.springframework.data.domain.Page;
