@@ -36,26 +36,21 @@ public class PlantJpaRepositoryTest {
     private PlantJpaRepository underTest;
 
     @BeforeAll
-    void initAll() {
-        try {
-            InputStream inputStream = Resources.getResource("plantCards.json").openStream();
-            String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            Type listType = new TypeToken<ArrayList<PlantToBuild>>() {}.getType();
-            List<PlantToBuild> plantsToConvert = new Gson().fromJson(json, listType);    
-            
-            List<Plant> plantsToPersist = plantsToConvert.stream()
-                    .map(plantToConvert -> 
-                        Plant.builder()
-                            .commonName(plantToConvert.commonName())
-                            .scientificName(plantToConvert.scientificName())
-                            .status(plantToConvert.status())
-                            .build()
-                    ).toList();
-            underTest.saveAll(plantsToPersist);
-        
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+    void initAll() throws IOException {
+        InputStream inputStream = Resources.getResource("plantCards.json").openStream();
+        String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        Type listType = new TypeToken<ArrayList<PlantToBuild>>() {}.getType();
+        List<PlantToBuild> plantsToConvert = new Gson().fromJson(json, listType);
+
+        List<Plant> plantsToPersist = plantsToConvert.stream()
+                .map(plantToConvert ->
+                    Plant.builder()
+                        .commonName(plantToConvert.commonName())
+                        .scientificName(plantToConvert.scientificName())
+                        .status(plantToConvert.status())
+                        .build()
+                ).toList();
+        underTest.saveAll(plantsToPersist);
     }
 
     @Test
