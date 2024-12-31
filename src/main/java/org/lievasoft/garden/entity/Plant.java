@@ -1,25 +1,8 @@
 package org.lievasoft.garden.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
 import org.lievasoft.garden.dto.CardResponseDto;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NamedNativeQuery(
         name = "findPlantCardsByPagination",
@@ -44,7 +27,10 @@ import lombok.Setter;
                 )
         }
 )
+@Builder
+@Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "plants")
@@ -68,11 +54,4 @@ public class Plant {
     @Setter(AccessLevel.NONE)
     @Version
     private int version;
-
-    @Builder
-    public Plant(String commonName, String scientificName, Status status) {
-        this.commonName = commonName;
-        this.scientificName = scientificName;
-        this.status = status;
-    }
 }
