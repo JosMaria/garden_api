@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.lievasoft.garden.dto.CardResponseDto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @NamedNativeQuery(
         name = "findPlantCardsByPagination",
         query = """
@@ -54,4 +57,13 @@ public class Plant {
     @Setter(AccessLevel.NONE)
     @Version
     private int version;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "classifications",
+            joinColumns = @JoinColumn(name = "plant_id")
+    )
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private Set<Classification> classification = new HashSet<>();
 }
