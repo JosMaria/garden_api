@@ -10,7 +10,7 @@ import java.util.Set;
 @NamedNativeQuery(
         name = "findPlantCardsByPagination",
         query = """
-            SELECT id, common_name, status
+            SELECT id, common_name, situation
             FROM plants
             LIMIT :limit
             OFFSET :offset
@@ -25,7 +25,7 @@ import java.util.Set;
                         columns = {
                                 @ColumnResult(name = "id", type = Long.class),
                                 @ColumnResult(name = "common_name", type = String.class),
-                                @ColumnResult(name = "status", type = Status.class),
+                                @ColumnResult(name = "situation", type = Situation.class),
                         }
                 )
         }
@@ -46,7 +46,7 @@ public class Plant {
     private String scientificName;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Situation situation;
 
     @Version
     private int version;
@@ -72,8 +72,8 @@ public class Plant {
         return scientificName;
     }
 
-    public Status getStatus() {
-        return status;
+    public Situation getSituation() {
+        return situation;
     }
 
     public int getVersion() {
@@ -96,7 +96,7 @@ public class Plant {
         this.scientificName = scientificName;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setSituation(Situation situation) {
+        this.situation = situation;
     }
 }

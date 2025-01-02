@@ -1,6 +1,6 @@
 package org.lievasoft.garden.entity;
 
-public enum Status {
+public enum Situation {
     ABSENT,
     AVAILABLE,
     PRESERVED

@@ -12,12 +12,18 @@ public class PlantMapper {
         Plant plant = new Plant();
         plant.setCommonName(payload.commonName());
         plant.setScientificName(payload.scientificName());
-        plant.setStatus(payload.status());
+        plant.setSituation(payload.situation());
         plant.addCategories(payload.categories());
         return plant;
     }
 
     public PlantResponseDto convertToPlantResponseDto(final Plant plant) {
-        return new PlantResponseDto(plant.getId(), plant.getCommonName(), plant.getScientificName(), plant.getStatus());
+        return new PlantResponseDto(
+                plant.getId(),
+                plant.getCommonName(),
+                plant.getScientificName(),
+                plant.getSituation(),
+                plant.getCategories()
+        );
     }
 }

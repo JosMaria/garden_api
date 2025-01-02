@@ -43,13 +43,13 @@ public class PlantJpaRepositoryTest {
         List<PlantToBuild> plantsToConvert = new Gson().fromJson(json, listType);
 
         List<Plant> plantsToPersist = plantsToConvert.stream()
-                .map(plantToConvert ->
-                    Plant.builder()
-                        .commonName(plantToConvert.commonName())
-                        .scientificName(plantToConvert.scientificName())
-                        .status(plantToConvert.status())
-                        .build()
-                ).toList();
+                .map(plantToConvert -> {
+                    Plant plant = new Plant();
+                    plant.setCommonName(plantToConvert.commonName());
+                    plant.setScientificName(plantToConvert.scientificName());
+                    plant.setSituation(plantToConvert.situation());
+                    return plant;
+                }).toList();
         underTest.saveAll(plantsToPersist);
     }
 

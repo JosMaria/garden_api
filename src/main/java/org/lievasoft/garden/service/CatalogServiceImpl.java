@@ -2,6 +2,7 @@ package org.lievasoft.garden.service;
 
 import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.CardResponseDto;
+import org.lievasoft.garden.dto.CatalogFilterDto;
 import org.lievasoft.garden.repository.PlantJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,7 +21,7 @@ public class CatalogServiceImpl implements CatalogService {
     }
 
     @Override
-    public Page<CardResponseDto> fetchPlantCardsByPagination(Pageable pageable) {
+    public Page<CardResponseDto> fetchPlantCardsByPagination(Pageable pageable, CatalogFilterDto filter) {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
         List<CardResponseDto> plantCardsObtained = plantJpaRepository.findPlantCardsByPagination(limit, offset);

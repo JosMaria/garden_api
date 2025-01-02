@@ -1,10 +1,10 @@
 package org.lievasoft.garden.dto;
 
-import org.lievasoft.garden.entity.Status;
+import org.lievasoft.garden.entity.Situation;
 
 public record CardResponseDto(
         Long id,
         String commonName,
-        Status status
+        Situation situation
 ) {
 }
