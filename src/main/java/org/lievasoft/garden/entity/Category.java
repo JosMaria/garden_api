@@ -1,6 +1,6 @@
 package org.lievasoft.garden.entity;
 
-public enum Classification {
+public enum Category {
     ALIMENTARY,
     CACTUS,
     EXOTIC,

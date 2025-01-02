@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service;
 public class PlantMapper {
 
     public Plant convertToPlant(final PlantCreateDto payload) {
-        return Plant.builder()
-                .commonName(payload.commonName())
-                .scientificName(payload.scientificName())
-                .status(payload.status())
-                .build();
+        Plant plant = new Plant();
+        plant.setCommonName(payload.commonName());
+        plant.setScientificName(payload.scientificName());
+        plant.setStatus(payload.status());
+        plant.addCategories(payload.categories());
+        return plant;
     }
 
     public PlantResponseDto convertToPlantResponseDto(final Plant plant) {

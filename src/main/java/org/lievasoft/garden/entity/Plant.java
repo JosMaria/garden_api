@@ -1,9 +1,9 @@
 package org.lievasoft.garden.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import org.lievasoft.garden.dto.CardResponseDto;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,11 +30,6 @@ import java.util.Set;
                 )
         }
 )
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "plants")
 public class Plant {
@@ -42,7 +37,6 @@ public class Plant {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "plant_seq")
     @SequenceGenerator(name = "plant_seq", sequenceName = "plant_sequence", allocationSize = 1)
-    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
@@ -54,16 +48,55 @@ public class Plant {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Setter(AccessLevel.NONE)
     @Version
     private int version;
 
     @ElementCollection
     @CollectionTable(
-            name = "classifications",
+            name = "categories",
             joinColumns = @JoinColumn(name = "plant_id")
     )
-    @Column(name = "type")
+    @Column(name = "name")
     @Enumerated(EnumType.STRING)
-    private Set<Classification> classification = new HashSet<>();
+    private final Set<Category> categories = new HashSet<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public String getScientificName() {
+        return scientificName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void addCategories(Collection<? extends Category> categories) {
+        this.categories.addAll(categories);
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public void setScientificName(String scientificName) {
+        this.scientificName = scientificName;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
