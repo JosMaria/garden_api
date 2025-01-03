@@ -7,18 +7,60 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@NamedNativeQuery(
-        name = "findPlantCardsByPagination",
-        query = """
-            SELECT id, common_name, situation
-            FROM plants
-            LIMIT :limit
-            OFFSET :offset
-        """,
-        resultSetMapping = "CardPageMapped"
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "findPlantCards",
+                query = """
+                    SELECT id, common_name, situation
+                    FROM plants
+                    LIMIT :limit
+                    OFFSET :offset
+                """,
+                resultSetMapping = "PlantCardPageMapped"
+        ),
+        @NamedNativeQuery(
+                name = "findPlantCardsBySituationAndCategories",
+                query = """
+                    SELECT id, common_name, situation
+                    FROM plants p
+                    LEFT JOIN categories c
+                        ON p.id = c.plant_id
+                    WHERE c.name = :categoryName AND p.situation = :situation
+                    LIMIT :limit
+                    OFFSET :offset
+                """,
+                resultSetMapping = "PlantCardPageMapped"
+        ),
+        @NamedNativeQuery(
+                name = "findPlantCardsBySituation",
+                query = """
+                    SELECT id, common_name, situation
+                    FROM plants p
+                    LEFT JOIN categories c
+                        ON p.id = c.plant_id
+                    WHERE p.situation = :situation
+                    LIMIT :limit
+                    OFFSET :offset
+                """,
+                resultSetMapping = "PlantCardPageMapped"
+        ),
+        @NamedNativeQuery(
+                name = "findPlantCardsByCategories",
+                query = """
+                    SELECT id, common_name, situation
+                    FROM plants p
+                    LEFT JOIN categories c
+                        ON p.id = c.plant_id
+                    WHERE c.name = :categoryName
+                    LIMIT :limit
+                    OFFSET :offset
+                """,
+                resultSetMapping = "PlantCardPageMapped"
+        )
+}
 )
 @SqlResultSetMapping(
-        name = "CardPageMapped",
+        name = "PlantCardPageMapped",
         classes = {
                 @ConstructorResult(
                         targetClass = CardResponseDto.class,

@@ -25,7 +25,7 @@ public class CatalogController {
     @GetMapping
     public ResponseEntity<Page<CardResponseDto>> fetchPlantCardsByPagination(
             @PageableDefault(size = 12) Pageable pageable,
-            @RequestBody CatalogFilterDto filter
+            @RequestBody(required = false) CatalogFilterDto filter
     ) {
         return ResponseEntity.ok(catalogService.fetchPlantCardsByPagination(pageable, filter));
     }

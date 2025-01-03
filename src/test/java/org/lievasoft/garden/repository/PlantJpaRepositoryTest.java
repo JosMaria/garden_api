@@ -61,7 +61,7 @@ public class PlantJpaRepositoryTest {
         String commonNameOfFirstPlantCard = "flor de navidad";
         String commonNameOfLastPlantCard = "aspidastra";
 
-        List<CardResponseDto> actual = underTest.findPlantCardsByPagination(PAGE_LIMIT, offset);
+        List<CardResponseDto> actual = underTest.findPlantCardsBySituation(PAGE_LIMIT, offset);
         
         assertAll("plant cards to first single page", 
             () -> assertThat(actual).isNotNull(),
@@ -83,7 +83,7 @@ public class PlantJpaRepositoryTest {
         int offset = 0;
 
         underTest.deleteAll();
-        List<CardResponseDto> actual = underTest.findPlantCardsByPagination(PAGE_LIMIT, offset);
+        List<CardResponseDto> actual = underTest.findPlantCardsBySituation(PAGE_LIMIT, offset);
         
         assertAll("empty list", 
             () -> assertThat(actual).isNotNull(),

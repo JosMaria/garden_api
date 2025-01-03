@@ -10,6 +10,28 @@ import java.util.List;
 
 public interface PlantJpaRepository extends JpaRepository<Plant, Long> {
 
-    @Query(name = "findPlantCardsByPagination", nativeQuery = true)
-    List<CardResponseDto> findPlantCardsByPagination(@Param("limit") int limit, @Param("offset") int offset);
+    @Query(name = "findPlantCards", nativeQuery = true)
+    List<CardResponseDto> findPlantCards(@Param("limit") int limit, @Param("offset") int offset);
+
+    @Query(name = "findPlantCardsBySituationAndCategories", nativeQuery = true)
+    List<CardResponseDto> findPlantCardsBySituationAndCategory(
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("situation") String situation,
+            @Param("categoryName") String category
+    );
+
+    @Query(name = "findPlantCardsBySituation", nativeQuery = true)
+    List<CardResponseDto> findPlantCardsBySituation(
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("situation") String situation
+    );
+
+    @Query(name = "findPlantCardsByCategories", nativeQuery = true)
+    List<CardResponseDto> findPlantCardsByCategory(
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("categoryName") String category
+    );
 }
