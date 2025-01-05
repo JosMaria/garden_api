@@ -35,10 +35,8 @@ import java.util.Set;
                 name = "findPlantCardsBySituation",
                 query = """
                     SELECT id, common_name, situation
-                    FROM plants p
-                    LEFT JOIN categories c
-                        ON p.id = c.plant_id
-                    WHERE p.situation = :situation
+                    FROM plants
+                    WHERE situation = :situation
                     LIMIT :limit
                     OFFSET :offset
                 """,
@@ -48,17 +46,19 @@ import java.util.Set;
                 name = "findPlantCardsByCategories",
                 query = """
                     SELECT id, common_name, situation
-                    FROM plants p
-                    LEFT JOIN categories c
-                        ON p.id = c.plant_id
-                    WHERE c.name = :categoryName
+                    FROM plants
+                    JOIN (
+                        SELECT DISTINCT plant_id
+                        FROM categories
+                        WHERE name IN :categories
+                    ) f
+                        ON id = f.plant_id
                     LIMIT :limit
                     OFFSET :offset
                 """,
                 resultSetMapping = "PlantCardPageMapped"
         )
-}
-)
+})
 @SqlResultSetMapping(
         name = "PlantCardPageMapped",
         classes = {
@@ -98,7 +98,7 @@ public class Plant {
             name = "categories",
             joinColumns = @JoinColumn(name = "plant_id")
     )
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private final Set<Category> categories = new HashSet<>();
 

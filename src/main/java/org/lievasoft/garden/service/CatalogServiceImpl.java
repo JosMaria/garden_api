@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CatalogServiceImpl implements CatalogService {
@@ -23,10 +25,14 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Override
     public Page<CardResponseDto> fetchPlantCardsByPagination(Pageable pageable, CatalogFilterDto filter) {
-        List<CardResponseDto> plantCardsObtained;
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
 
+        List<CardResponseDto> plantCardsBySituation = plantJpaRepository.findPlantCardsBySituation(limit, offset, filter.situation().name());
+
+//        long situationCount = plantJpaRepository.countPlantCardsBySituation(limit, offset, filter.situation());
+
+        /*
         if (Objects.isNull(filter)) {
             plantCardsObtained = plantJpaRepository.findPlantCards(limit, offset);
         } else {
@@ -39,7 +45,15 @@ public class CatalogServiceImpl implements CatalogService {
                     plantCardsObtained = plantJpaRepository.findPlantCardsByCategory(limit, offset, Category.ORNAMENTAL.name());
                 }
             }
-        }
+        }*/
+
+        List<String> categoryNames = filter.categories().stream()
+                .map(Category::name)
+                .toList();
+
+        long count = plantJpaRepository.countPlantsByCategories(categoryNames);
+
+        List<CardResponseDto> plantCardsObtained = plantJpaRepository.findPlantCardsByCategories(limit, offset, filter.categories());
 
         return new PageImpl<>(plantCardsObtained, pageable, plantJpaRepository.count());
     }
