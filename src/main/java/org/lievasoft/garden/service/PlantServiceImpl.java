@@ -3,28 +3,35 @@ package org.lievasoft.garden.service;
 import lombok.extern.slf4j.Slf4j;
 import org.lievasoft.garden.dto.PlantCreateDto;
 import org.lievasoft.garden.dto.PlantResponseDto;
-import org.lievasoft.garden.entity.Plant;
-import org.lievasoft.garden.mapper.PlantMapper;
-import org.lievasoft.garden.repository.PlantJpaRepository;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Slf4j
 @Service
 public class PlantServiceImpl implements PlantService {
 
-    private final PlantJpaRepository plantJpaRepository;
-    private final PlantMapper plantMapper;
+    private final JdbcClient jdbcClient;
 
-    public PlantServiceImpl(PlantJpaRepository plantJpaRepository, PlantMapper plantMapper) {
-        this.plantJpaRepository = plantJpaRepository;
-        this.plantMapper = plantMapper;
+    public PlantServiceImpl(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
     }
 
     @Override
     public PlantResponseDto persist(final PlantCreateDto payload) {
-        Plant plantToPersist = plantMapper.convertToPlant(payload);
-        Plant plantPersisted = plantJpaRepository.save(plantToPersist);
-        System.out.printf("Plant persisted with ID: %s%n", plantPersisted.getId());
-        return plantMapper.convertToPlantResponseDto(plantPersisted);
+        var sql = """
+                INSERT INTO plants (common_name, scientific_name, situation)
+                VALUES (:commonName, :scientificName, :situation);
+                """;
+
+        int result = jdbcClient.sql(sql)
+                .param("commonName",  payload.commonName())
+                .param("scientificName", payload.scientificName())
+                .param("situation", payload.situation())
+                .update();
+
+        Assert.state(result == 1, "Plant has not been persisted");
+        return null;
     }
 }
