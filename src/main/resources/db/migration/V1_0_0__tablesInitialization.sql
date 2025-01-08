@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS plants (
     id BIGINT DEFAULT nextval('plant_sequence') PRIMARY KEY,
     common_name VARCHAR(50) UNIQUE NOT NULL,
     scientific_name VARCHAR(50),
-    situation situation
+    situation situation NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS classifications (
     plant_id BIGINT CONSTRAINT fk_plant_classifications REFERENCES plants(id),
-    name classification
+    value classification NOT NULL
 );

@@ -37,8 +37,6 @@ import java.util.Set;
                     SELECT id, common_name, situation
                     FROM plants
                     WHERE situation = :situation
-                    LIMIT :limit
-                    OFFSET :offset
                 """,
                 resultSetMapping = "PlantCardPageMapped"
         ),
@@ -88,19 +86,21 @@ public class Plant {
     private String scientificName;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Situation situation;
 
     @Version
+    @Transient
     private int version;
 
     @ElementCollection
     @CollectionTable(
-            name = "categories",
+            name = "classifications",
             joinColumns = @JoinColumn(name = "plant_id")
     )
-    @Column(name = "name", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private final Set<Category> categories = new HashSet<>();
+    @Column(name = "value", nullable = false)
+    private final Set<Classification> classifications = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -122,12 +122,12 @@ public class Plant {
         return version;
     }
 
-    public Set<Category> getCategories() {
-        return categories;
+    public Set<Classification> getClassifications() {
+        return classifications;
     }
 
-    public void addCategories(Collection<? extends Category> categories) {
-        this.categories.addAll(categories);
+    public void addCategories(Collection<? extends Classification> categories) {
+        this.classifications.addAll(categories);
     }
 
     public void setCommonName(String commonName) {
@@ -140,5 +140,8 @@ public class Plant {
 
     public void setSituation(Situation situation) {
         this.situation = situation;
+    }
+
+    public Plant() {
     }
 }

@@ -14,7 +14,6 @@ spring:
     properties:
       hibernate:
         generate_statistics: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
         format_sql: true
   flyway:
@@ -22,8 +21,6 @@ spring:
     baseline-description: "init"
     baseline-version: 0
     enabled: true
-    user: postgresql
-    password: maria17
 logging:
   level:
     org:
