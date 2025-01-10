@@ -5,6 +5,8 @@ import org.lievasoft.garden.dto.PlantCreateDto;
 import org.lievasoft.garden.dto.PlantResponseDto;
 import org.lievasoft.garden.entity.Classification;
 import org.lievasoft.garden.entity.Situation;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -25,6 +27,21 @@ public class PlantServiceImpl implements PlantService {
 
     @Override
     public PlantResponseDto persist(final PlantCreateDto payload) {
+        var existsCommonNameSql = """
+                    SELECT exists (
+                        SELECT id
+                        FROM plants
+                        WHERE common_name = :commonName
+                    );
+                """;
+
+        boolean exists = jdbcClient.sql(existsCommonNameSql)
+                .param("commonName", payload.commonName())
+                .query((resultSet, rowNum) -> resultSet.getBoolean("exists"))
+                .single();
+
+        Assert.isTrue(!exists, "Plant with commonName " + payload.commonName() + " already exists");
+
         var insertPlantSql = """
                 INSERT INTO plants (uuid, common_name, scientific_name, situation)
                 VALUES (:uuid, :commonName, :scientificName, cast(:situation AS situation));

@@ -27,3 +27,7 @@ logging:
       hibernate:
         stat: debug
         type: trace
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
