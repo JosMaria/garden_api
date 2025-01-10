@@ -8,7 +8,7 @@ spring:
     password: maria17
   jpa:
     database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
     hibernate:
       ddl-auto: validate
     properties:
