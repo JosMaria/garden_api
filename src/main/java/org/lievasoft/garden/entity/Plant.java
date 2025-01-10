@@ -79,6 +79,9 @@ public class Plant {
     @SequenceGenerator(name = "plant_seq", sequenceName = "plant_sequence", allocationSize = 1)
     private Long id;
 
+    @Column(nullable = false, unique = true, updatable = false, length = 50)
+    private String uuid;
+
     @Column(unique = true, nullable = false, length = 50)
     private String commonName;
 
@@ -104,6 +107,10 @@ public class Plant {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getCommonName() {
