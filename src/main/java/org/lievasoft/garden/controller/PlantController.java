@@ -1,7 +1,6 @@
 package org.lievasoft.garden.controller;
 
 import org.lievasoft.garden.dto.PlantCreateDto;
-import org.lievasoft.garden.dto.PlantResponseDto;
 import org.lievasoft.garden.service.PlantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,9 @@ public class PlantController {
     }
 
     @PostMapping
-    public ResponseEntity<PlantResponseDto> save(@RequestBody PlantCreateDto payload) {
-        return new ResponseEntity<>(plantService.persist(payload), HttpStatus.CREATED);
+    public ResponseEntity<Void> save(@RequestBody PlantCreateDto payload) {
+        // TODO: add more information to the header
+        plantService.persist(payload);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

@@ -1,8 +1,6 @@
 package org.lievasoft.garden.dao;
 
-import org.lievasoft.garden.dto.ClassificationToPersist;
-import org.lievasoft.garden.dto.PlantResponseDto;
-import org.lievasoft.garden.dto.PlantToPersist;
+import org.lievasoft.garden.dto.PlantCreateDto;
 
 import java.util.Optional;
 
@@ -10,9 +8,9 @@ public interface PlantDao {
 
     boolean existsByCommonName(String commonName);
 
-    int insertPlant(PlantToPersist dto);
+    int insertPlant(String uuid, PlantCreateDto dto);
 
-    int insertClassification(ClassificationToPersist dto);
+    int insertClassification(Long plantId, String classificationValue);
 
-    Optional<PlantResponseDto> findByUUID(String uuid);
+    Optional<Long> findPlantIdByUuidAndCommonName(String uuid, String commonName);
 }
