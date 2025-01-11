@@ -1,8 +1,8 @@
 package org.lievasoft.garden.service;
 
+import org.lievasoft.garden.dao.CatalogDao;
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.dto.CatalogFilterDto;
-import org.lievasoft.garden.entity.Situation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +15,11 @@ import java.util.List;
 public class CatalogServiceImpl implements CatalogService {
 
     private final JdbcClient jdbcClient;
+    private final CatalogDao catalogDao;
 
-    public CatalogServiceImpl(JdbcClient jdbcClient) {
+    public CatalogServiceImpl(JdbcClient jdbcClient, CatalogDao catalogDao) {
         this.jdbcClient = jdbcClient;
+        this.catalogDao = catalogDao;
     }
 
     @Override
@@ -25,32 +27,9 @@ public class CatalogServiceImpl implements CatalogService {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
 
-        var statement = """
-                SELECT id, common_name, situation
-                FROM plants
-                LIMIT :limit
-                OFFSET :offset;
-                """;
-
-        List<CardResponseDto> response = jdbcClient.sql(statement)
-                .param("limit", limit)
-                .param("offset", offset)
-                .query((resultSet, rowNum) ->
-                        new CardResponseDto(
-                                resultSet.getLong("id"),
-                                resultSet.getString("common_name"),
-                                Situation.valueOf(resultSet.getString("situation").toUpperCase())
-                        ))
-                .list();
-
-        var statementCount = """
-                SELECT count(*)
-                FROM plants
-                """;
-
-        Long count = jdbcClient.sql(statementCount)
-                .query((resultSet, rowNum) -> resultSet.getLong("count"))
-                .single();
+        List<CardResponseDto> content = catalogDao.findPlantCardsWithoutFilters(limit, offset);
+        long count = catalogDao.countPlantCardsWithoutFilter();
+        return new PageImpl<>(content, pageable, count);
 
 
 //        Page<CardResponseDto> page = plantJpaRepository.findPlantCardsBySituation(filter.situation().name(), pageable);
@@ -72,7 +51,7 @@ public class CatalogServiceImpl implements CatalogService {
             }
         }*/
 
-        return new PageImpl<>(response, pageable, count);
+
         /*List<String> categoryNames = filter.categories().stream()
                 .map(Category::name)
                 .toList();
