@@ -1,7 +1,6 @@
 package org.lievasoft.garden.mapper;
 
 import org.lievasoft.garden.dto.PlantCreateDto;
-import org.lievasoft.garden.dto.PlantResponseDto;
 import org.lievasoft.garden.entity.Plant;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +12,7 @@ public class PlantMapper {
         plant.setCommonName(payload.commonName());
         plant.setScientificName(payload.scientificName());
         plant.setSituation(payload.situation());
-        plant.addCategories(payload.categories());
+        plant.addCategories(payload.classifications());
         return plant;
-    }
-
-    public PlantResponseDto convertToPlantResponseDto(final Plant plant) {
-        return new PlantResponseDto(
-                plant.getId(),
-                plant.getCommonName(),
-                plant.getScientificName(),
-                plant.getSituation(),
-                plant.getCategories()
-        );
     }
 }
