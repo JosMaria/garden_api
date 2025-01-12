@@ -6,7 +6,6 @@ import org.lievasoft.garden.dto.CatalogFilterDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,9 @@ import java.util.List;
 @Service
 public class CatalogServiceImpl implements CatalogService {
 
-    private final JdbcClient jdbcClient;
     private final CatalogDao catalogDao;
 
-    public CatalogServiceImpl(JdbcClient jdbcClient, CatalogDao catalogDao) {
-        this.jdbcClient = jdbcClient;
+    public CatalogServiceImpl(CatalogDao catalogDao) {
         this.catalogDao = catalogDao;
     }
 
@@ -27,9 +24,29 @@ public class CatalogServiceImpl implements CatalogService {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
 
-        List<CardResponseDto> content = catalogDao.findPlantCardsWithoutFilters(limit, offset);
-        long count = catalogDao.countPlantCardsWithoutFilter();
-        return new PageImpl<>(content, pageable, count);
+        PageImpl<CardResponseDto> response;
+        if (filter == null || (filter.classifications() == null && filter.situation() == null)) {
+            List<CardResponseDto> content = catalogDao.findPlantCardsWithoutFilters(limit, offset);
+            long count = catalogDao.countPlantCardsWithoutFilter();
+            response = new PageImpl<>(content, pageable, count);
+        } else {
+            if (filter.classifications() != null && filter.situation() != null) {
+                List<CardResponseDto> content = catalogDao.findPlantCardsWithFilters(limit, offset, filter);
+                long count = catalogDao.countWithFilters(filter);
+                response = new PageImpl<>(content, pageable, count);
+
+            } else {
+                if (filter.classifications() != null) {
+                    // TODO filter with classification
+                    return null;
+                } else {
+                    // TODO
+                    return null;
+                }
+            }
+        }
+
+        return response;
 
 
 //        Page<CardResponseDto> page = plantJpaRepository.findPlantCardsBySituation(filter.situation().name(), pageable);

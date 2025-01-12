@@ -6,7 +6,7 @@ import org.lievasoft.garden.entity.Situation;
 import java.util.Set;
 
 public record CatalogFilterDto(
-        Set<Classification> categories,
+        Set<Classification> classifications,
         Situation situation
 ) {
 }
