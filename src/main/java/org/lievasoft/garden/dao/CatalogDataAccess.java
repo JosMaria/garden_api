@@ -1,6 +1,7 @@
 package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
+import org.lievasoft.garden.entity.Classification;
 import org.lievasoft.garden.entity.Situation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,7 +11,10 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class CatalogDataAccess implements CatalogDao {
@@ -101,6 +105,58 @@ public class CatalogDataAccess implements CatalogDao {
 
         return jdbcClient.sql(statement)
                 .param("situation", situation)
+                .query((resultSet, rowNum) -> resultSet.getLong("count"))
+                .single();
+    }
+
+    @Override
+    public Page<CardResponseDto> plantCardPageByClassifications(Pageable pageable, Set<Classification> classifications) {
+        int limit = pageable.getPageSize();
+        int offset = pageable.getPageNumber() * limit;
+
+        Set<String> mappedClassifications = classifications.stream()
+                .map(classification -> classification.name().toLowerCase())
+                .collect(Collectors.toSet());
+
+        List<CardResponseDto> content = findPlantCardsByClassifications(limit, offset, mappedClassifications);
+        long total = countPlantCardsByClassifications(mappedClassifications);
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    public List<CardResponseDto> findPlantCardsByClassifications(int limit, int offset, Set<String> classifications) {
+        var statement = """
+                SELECT id, common_name, situation
+                FROM plants
+                JOIN (
+                    SELECT DISTINCT plant_id
+                    FROM classifications
+                    WHERE cast(value AS VARCHAR) IN (:values)
+                ) f ON id = f.plant_id
+                LIMIT :limit
+                OFFSET :offset
+                """;
+
+        return jdbcClient.sql(statement)
+                .params(Collections.singletonMap("values", classifications))
+                .param("limit", limit)
+                .param("offset", offset)
+                .query(rowMapper)
+                .list();
+    }
+
+    public long countPlantCardsByClassifications(Set<String> classifications) {
+        var statement = """
+                SELECT count(*)
+                FROM plants
+                JOIN (
+                    SELECT DISTINCT plant_id
+                    FROM classifications
+                    WHERE cast(value AS VARCHAR) IN (:values)
+                ) f ON id = f.plant_id
+                """;
+
+        return jdbcClient.sql(statement)
+                .params(Collections.singletonMap("values", classifications))
                 .query((resultSet, rowNum) -> resultSet.getLong("count"))
                 .single();
     }

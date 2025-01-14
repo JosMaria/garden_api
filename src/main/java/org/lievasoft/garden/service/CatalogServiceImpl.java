@@ -23,6 +23,6 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Override
     public Page<CardResponseDto> fetchFilteredPlantCards(Pageable pageable, CatalogFilterDto filter) {
-        return catalogDao.plantCardPageBySituation(pageable, filter.situation().name().toLowerCase());
+        return catalogDao.plantCardPageByClassifications(pageable, filter.classifications());
     }
 }
