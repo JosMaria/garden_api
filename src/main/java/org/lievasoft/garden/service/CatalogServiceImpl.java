@@ -22,7 +22,7 @@ public class CatalogServiceImpl implements CatalogService {
     }
 
     @Override
-    public Page<CardResponseDto> fetchFilteredPlantCards(Pageable pageable, CatalogFilterDto filter) {
-        return catalogDao.plantCardPageByClassifications(pageable, filter.classifications());
+    public Page<CardResponseDto> fetchFilteredPlantCards(Pageable pageable, CatalogFilterDto filters) {
+        return catalogDao.filteredPlantCardPage(pageable, filters);
     }
 }

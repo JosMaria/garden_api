@@ -1,6 +1,7 @@
 package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
+import org.lievasoft.garden.dto.CatalogFilterDto;
 import org.lievasoft.garden.entity.Classification;
 import org.lievasoft.garden.entity.Situation;
 import org.springframework.data.domain.Page;
@@ -157,6 +158,68 @@ public class CatalogDataAccess implements CatalogDao {
 
         return jdbcClient.sql(statement)
                 .params(Collections.singletonMap("values", classifications))
+                .query((resultSet, rowNum) -> resultSet.getLong("count"))
+                .single();
+    }
+
+    @Override
+    public Page<CardResponseDto> filteredPlantCardPage(Pageable pageable, CatalogFilterDto filters) {
+        int limit = pageable.getPageSize();
+        int offset = pageable.getPageNumber() * limit;
+
+        List<CardResponseDto> content = findFilteredPlantCards(limit, offset, filters);
+        long total = countFilteredPlantCards(filters);
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    public List<CardResponseDto> findFilteredPlantCards(int limit, int offset, CatalogFilterDto filters) {
+        Set<String> mappedClassifications = filters.classifications()
+                .stream()
+                .map(classification -> classification.name().toLowerCase())
+                .collect(Collectors.toSet());
+
+        var statement = """
+                SELECT id, common_name, situation
+                FROM plants
+                JOIN (
+                    SELECT DISTINCT plant_id
+                    FROM classifications
+                    WHERE cast(value AS VARCHAR) IN (:values)
+                ) f ON id = f.plant_id
+                WHERE situation = cast(:situation AS situation)
+                LIMIT :limit
+                OFFSET :offset
+                """;
+
+        return jdbcClient.sql(statement)
+                .params(Collections.singletonMap("values", mappedClassifications))
+                .param("situation", filters.situation().name().toLowerCase())
+                .param("limit", limit)
+                .param("offset", offset)
+                .query(rowMapper)
+                .list();
+    }
+
+    public long countFilteredPlantCards(CatalogFilterDto filters) {
+        Set<String> mappedClassifications = filters.classifications()
+                .stream()
+                .map(classification -> classification.name().toLowerCase())
+                .collect(Collectors.toSet());
+
+        var statement = """
+                SELECT count(*)
+                FROM plants
+                JOIN (
+                    SELECT DISTINCT plant_id
+                    FROM classifications
+                    WHERE cast(value AS VARCHAR) IN (:values)
+                ) f ON id = f.plant_id
+                WHERE situation = cast(:situation AS situation)
+                """;
+
+        return jdbcClient.sql(statement)
+                .params(Collections.singletonMap("values", mappedClassifications))
+                .param("situation", filters.situation().name().toLowerCase())
                 .query((resultSet, rowNum) -> resultSet.getLong("count"))
                 .single();
     }
