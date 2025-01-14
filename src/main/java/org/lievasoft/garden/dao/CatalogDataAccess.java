@@ -3,6 +3,7 @@ package org.lievasoft.garden.dao;
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.dto.CatalogFilterDto;
 import org.lievasoft.garden.entity.Situation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,7 @@ public class CatalogDataAccess implements CatalogDao {
     }
 
     @Override
-    public List<CardResponseDto> findPlantCardsWithoutFilters(int limit, int offset) {
+    public List<CardResponseDto> findPlantCards(int limit, int offset) {
         var statement = """
                 SELECT id, common_name, situation
                 FROM plants
@@ -69,6 +70,42 @@ public class CatalogDataAccess implements CatalogDao {
 
         return jdbcClient.sql(statement)
                 .param("situation", filters.situation().name().toLowerCase())
+                .query((resultSet, rowNum) -> resultSet.getLong("count"))
+                .single();
+    }
+
+    @Override
+    public List<CardResponseDto> findFilteredPlantCardsBySituation(Pageable pageable, Situation situation) {
+        int limit = pageable.getPageSize();
+        int offset = pageable.getPageNumber() * limit;
+
+        var statement = """
+                SELECT id, common_name, situation
+                FROM plants
+                WHERE situation = cast(:situation AS situation)
+                LIMIT :limit
+                OFFSET :offset;
+                """;
+
+        return jdbcClient.sql(statement)
+                .param("situation", situation.name().toLowerCase())
+                .param("limit", limit)
+                .param("offset", offset)
+                .query(new CardResponseMapper())
+                .list();
+    }
+
+    @Override
+    public Long countFilteredBySituation(Situation situation) {
+
+        var statement = """
+                SELECT count(*)
+                FROM plants
+                WHERE situation = cast(:situation AS situation)
+                """;
+
+        return jdbcClient.sql(statement)
+                .param("situation", situation.name().toLowerCase())
                 .query((resultSet, rowNum) -> resultSet.getLong("count"))
                 .single();
     }
