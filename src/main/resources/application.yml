@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: garden
+  datasource:
+    url: jdbc:postgresql://localhost:9000/postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: maria17
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        generate_statistics: true
+        show_sql: true
+        format_sql: true
+  flyway:
+    baseline-on-migrate: true
+    baseline-description: "init"
+    baseline-version: 0
+    enabled: true
+logging:
+  level:
+    org:
+      hibernate:
+        stat: debug
+        type: trace
+server:
+  error:
+    include-binding-errors: always
+    include-message: always

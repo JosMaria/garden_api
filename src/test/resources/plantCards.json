@@ -1,0 +1,16 @@
+[
+    { "commonName": "flor de navidad","scientificName": "euphorbia pulcherrima", "situation": "AVAILABLE", "categories": ["ORNAMENTAL"] },
+    { "commonName": "acacia orrida", "scientificName": "acacia orrida", "situation": "AVAILABLE", "categories": ["FOREST"] },
+    { "commonName": "agave", "scientificName": "agave tequilero", "situation": "AVAILABLE", "categories": ["INDUSTRIAL"] },
+    { "commonName": "aji ornamental", "scientificName": "capsicum annuum", "situation": "AVAILABLE", "categories": ["ALIMENTARY"] },
+    { "commonName": "ajuga", "scientificName": "ajuga reptans", "situation": "ABSENT", "categories": ["ORNAMENTAL"] },
+    { "commonName": "alamo", "scientificName": "populus x canadensis Moench", "situation": "AVAILABLE", "categories": ["FOREST"] },
+    { "commonName": "aloe", "scientificName": "aloe barbadensis var. chinensis", "situation": "AVAILABLE", "categories": ["MEDICINAL"] },
+    { "commonName": "amarilis", "scientificName": "hippeastrum spp", "situation": "ABSENT", "categories": ["ORNAMENTAL"] },
+    { "commonName": "amor de hombre", "scientificName": "trasdecantia pallida", "situation": "ABSENT", "categories": ["ORNAMENTAL"] },
+    { "commonName": "anturio", "scientificName": "anthurium andreanum", "situation": "ABSENT", "categories": ["ORNAMENTAL"] },
+    { "commonName": "anturio gigante", "scientificName": "anthurium andreanum", "situation": "AVAILABLE", "categories": ["ORNAMENTAL"] },
+    { "commonName": "aspidastra", "scientificName": "aspidiastra elatior", "situation": "ABSENT", "categories": ["ORNAMENTAL"] },
+    { "commonName": "begonia cebra", "scientificName": "", "situation": "AVAILABLE", "categories": ["ORNAMENTAL"] },
+    { "commonName": "begonia rex", "scientificName": "begonia rex", "situation": "AVAILABLE", "categories": ["ORNAMENTAL"] }
+]
