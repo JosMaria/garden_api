@@ -2,9 +2,6 @@ package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.entity.Situation;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -31,16 +28,6 @@ public class CatalogDataAccess implements CatalogDao {
             );
 
     @Override
-    public Page<CardResponseDto> plantCardPage(Pageable pageable) {
-        int limit = pageable.getPageSize();
-        int offset = pageable.getPageNumber() * limit;
-
-        List<CardResponseDto> content = findPlantCards(offset, limit);
-        long total = countPlantCards();
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
     public List<CardResponseDto> findPlantCards(int limit, int offset) {
         var statement = """
                 SELECT id, common_name, situation
@@ -56,6 +43,7 @@ public class CatalogDataAccess implements CatalogDao {
                 .list();
     }
 
+    @Override
     public long countPlantCards() {
         var statement = """
                 SELECT count(*)

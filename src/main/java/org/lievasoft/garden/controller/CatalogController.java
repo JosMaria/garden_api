@@ -23,15 +23,10 @@ public class CatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CardResponseDto>> fetchPlantCards(@PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(catalogService.fetchPlantCards(pageable));
-    }
-
-    @GetMapping("filter")
-    public ResponseEntity<Page<CardResponseDto>> fetchFilteredPlantCards(
+    public ResponseEntity<Page<CardResponseDto>> fetchPlantCards(
             @PageableDefault Pageable pageable,
-            @RequestBody CatalogFilterDto filters
+            @RequestBody(required = false) CatalogFilterDto filters
     ) {
-        return ResponseEntity.ok(catalogService.fetchFilteredPlantCards(pageable, filters));
+        return ResponseEntity.ok(catalogService.fetchPlantCards(pageable, filters));
     }
 }

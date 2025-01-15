@@ -1,15 +1,15 @@
 package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Set;
 
 public interface CatalogDao {
 
-    Page<CardResponseDto> plantCardPage(Pageable pageable);
+    List<CardResponseDto> findPlantCards(int limit, int offset);
+
+    long countPlantCards();
 
     List<CardResponseDto> findPlantCardsBySituation(int limit, int offset, String situation);
 

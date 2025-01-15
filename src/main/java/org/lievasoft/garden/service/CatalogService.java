@@ -7,7 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CatalogService {
 
-    Page<CardResponseDto> fetchPlantCards(Pageable pageable);
-
-    Page<CardResponseDto> fetchFilteredPlantCards(Pageable pageable, CatalogFilterDto filters);
+    Page<CardResponseDto> fetchPlantCards(Pageable pageable, CatalogFilterDto filters);
 }

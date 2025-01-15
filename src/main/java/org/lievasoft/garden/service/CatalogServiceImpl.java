@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class CatalogServiceImpl implements CatalogService {
 
@@ -24,43 +26,40 @@ public class CatalogServiceImpl implements CatalogService {
         this.catalogDao = catalogDao;
     }
 
-    private final Function<Set<Classification>, Set<String>> convertClassification =
-            classifications ->
-                    classifications.stream()
-                            .map(classification -> classification.name().toLowerCase())
-                            .collect(Collectors.toSet());
+    private final Function<Set<Classification>, Set<String>> convertClassification = classifications -> classifications.stream().map(classification -> classification.name().toLowerCase()).collect(Collectors.toSet());
 
     private final Function<Situation, String> convertSituation = situation -> situation.name().toLowerCase();
 
     @Override
-    public Page<CardResponseDto> fetchPlantCards(Pageable pageable) {
-        return catalogDao.plantCardPage(pageable);
-    }
-
-    @Override
-    public Page<CardResponseDto> fetchFilteredPlantCards(Pageable pageable, CatalogFilterDto filters) {
+    public Page<CardResponseDto> fetchPlantCards(Pageable pageable, CatalogFilterDto filters) {
         int limit = pageable.getPageSize();
         int offset = pageable.getPageNumber() * limit;
 
         List<CardResponseDto> content;
         long total;
 
-        if (filters.situation() != null && filters.classifications() != null) {
-            Set<String> classifications = convertClassification.apply(filters.classifications());
-            String situation = convertSituation.apply(filters.situation());
-            content = catalogDao.findFilteredPlantCards(limit, offset, classifications, situation);
-            total = catalogDao.countFilteredPlantCards(classifications, situation);
+        if (isNull(filters)) {
+            content = catalogDao.findPlantCards(limit, offset);
+            total = catalogDao.countPlantCards();
 
         } else {
-            if (filters.situation() != null) {
+            if (!isNull(filters.situation()) && !isNull(filters.classifications())) {
+                Set<String> classifications = convertClassification.apply(filters.classifications());
                 String situation = convertSituation.apply(filters.situation());
-                content = catalogDao.findPlantCardsBySituation(limit, offset, situation);
-                total = catalogDao.countPlantCardsBySituation(situation);
+                content = catalogDao.findFilteredPlantCards(limit, offset, classifications, situation);
+                total = catalogDao.countFilteredPlantCards(classifications, situation);
 
             } else {
-                Set<String> classifications = convertClassification.apply(filters.classifications());
-                content = catalogDao.findPlantCardsByClassifications(limit, offset, classifications);
-                total = catalogDao.countPlantCardsByClassifications(classifications);
+                if (!isNull(filters.situation())) {
+                    String situation = convertSituation.apply(filters.situation());
+                    content = catalogDao.findPlantCardsBySituation(limit, offset, situation);
+                    total = catalogDao.countPlantCardsBySituation(situation);
+
+                } else {
+                    Set<String> classifications = convertClassification.apply(filters.classifications());
+                    content = catalogDao.findPlantCardsByClassifications(limit, offset, classifications);
+                    total = catalogDao.countPlantCardsByClassifications(classifications);
+                }
             }
         }
 
