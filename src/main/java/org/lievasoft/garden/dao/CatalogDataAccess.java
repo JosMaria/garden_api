@@ -1,8 +1,6 @@
 package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
-import org.lievasoft.garden.dto.CatalogFilterDto;
-import org.lievasoft.garden.entity.Classification;
 import org.lievasoft.garden.entity.Situation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,7 +13,6 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 public class CatalogDataAccess implements CatalogDao {
@@ -71,15 +68,6 @@ public class CatalogDataAccess implements CatalogDao {
     }
 
     @Override
-    public Page<CardResponseDto> plantCardPageBySituation(Pageable pageable, String situation) {
-        int limit = pageable.getPageSize();
-        int offset = pageable.getPageNumber() * limit;
-
-        List<CardResponseDto> content = findPlantCardsBySituation(limit, offset, situation);
-        long total = countPlantCardsBySituation(situation);
-        return new PageImpl<>(content, pageable, total);
-    }
-
     public List<CardResponseDto> findPlantCardsBySituation(int limit, int offset, String situation) {
         var statement = """
                 SELECT id, common_name, situation
@@ -97,6 +85,7 @@ public class CatalogDataAccess implements CatalogDao {
                 .list();
     }
 
+    @Override
     public long countPlantCardsBySituation(String situation) {
         var statement = """
                 SELECT count(*)
@@ -111,19 +100,6 @@ public class CatalogDataAccess implements CatalogDao {
     }
 
     @Override
-    public Page<CardResponseDto> plantCardPageByClassifications(Pageable pageable, Set<Classification> classifications) {
-        int limit = pageable.getPageSize();
-        int offset = pageable.getPageNumber() * limit;
-
-        Set<String> mappedClassifications = classifications.stream()
-                .map(classification -> classification.name().toLowerCase())
-                .collect(Collectors.toSet());
-
-        List<CardResponseDto> content = findPlantCardsByClassifications(limit, offset, mappedClassifications);
-        long total = countPlantCardsByClassifications(mappedClassifications);
-        return new PageImpl<>(content, pageable, total);
-    }
-
     public List<CardResponseDto> findPlantCardsByClassifications(int limit, int offset, Set<String> classifications) {
         var statement = """
                 SELECT id, common_name, situation
@@ -145,6 +121,7 @@ public class CatalogDataAccess implements CatalogDao {
                 .list();
     }
 
+    @Override
     public long countPlantCardsByClassifications(Set<String> classifications) {
         var statement = """
                 SELECT count(*)
@@ -163,21 +140,7 @@ public class CatalogDataAccess implements CatalogDao {
     }
 
     @Override
-    public Page<CardResponseDto> filteredPlantCardPage(Pageable pageable, CatalogFilterDto filters) {
-        int limit = pageable.getPageSize();
-        int offset = pageable.getPageNumber() * limit;
-
-        List<CardResponseDto> content = findFilteredPlantCards(limit, offset, filters);
-        long total = countFilteredPlantCards(filters);
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    public List<CardResponseDto> findFilteredPlantCards(int limit, int offset, CatalogFilterDto filters) {
-        Set<String> mappedClassifications = filters.classifications()
-                .stream()
-                .map(classification -> classification.name().toLowerCase())
-                .collect(Collectors.toSet());
-
+    public List<CardResponseDto> findFilteredPlantCards(int limit, int offset, Set<String> classifications, String situation) {
         var statement = """
                 SELECT id, common_name, situation
                 FROM plants
@@ -192,20 +155,16 @@ public class CatalogDataAccess implements CatalogDao {
                 """;
 
         return jdbcClient.sql(statement)
-                .params(Collections.singletonMap("values", mappedClassifications))
-                .param("situation", filters.situation().name().toLowerCase())
+                .params(Collections.singletonMap("values", classifications))
+                .param("situation", situation)
                 .param("limit", limit)
                 .param("offset", offset)
                 .query(rowMapper)
                 .list();
     }
 
-    public long countFilteredPlantCards(CatalogFilterDto filters) {
-        Set<String> mappedClassifications = filters.classifications()
-                .stream()
-                .map(classification -> classification.name().toLowerCase())
-                .collect(Collectors.toSet());
-
+    @Override
+    public long countFilteredPlantCards(Set<String> classifications, String situation) {
         var statement = """
                 SELECT count(*)
                 FROM plants
@@ -218,8 +177,8 @@ public class CatalogDataAccess implements CatalogDao {
                 """;
 
         return jdbcClient.sql(statement)
-                .params(Collections.singletonMap("values", mappedClassifications))
-                .param("situation", filters.situation().name().toLowerCase())
+                .params(Collections.singletonMap("values", classifications))
+                .param("situation", situation)
                 .query((resultSet, rowNum) -> resultSet.getLong("count"))
                 .single();
     }

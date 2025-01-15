@@ -1,20 +1,25 @@
 package org.lievasoft.garden.dao;
 
 import org.lievasoft.garden.dto.CardResponseDto;
-import org.lievasoft.garden.dto.CatalogFilterDto;
-import org.lievasoft.garden.entity.Classification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Set;
 
 public interface CatalogDao {
 
     Page<CardResponseDto> plantCardPage(Pageable pageable);
 
-    Page<CardResponseDto> plantCardPageBySituation(Pageable pageable, String situation);
+    List<CardResponseDto> findPlantCardsBySituation(int limit, int offset, String situation);
 
-    Page<CardResponseDto> plantCardPageByClassifications(Pageable pageable, Set<Classification> classifications);
+    long countPlantCardsBySituation(String situation);
 
-    Page<CardResponseDto> filteredPlantCardPage(Pageable pageable, CatalogFilterDto filters);
+    List<CardResponseDto> findPlantCardsByClassifications(int limit, int offset, Set<String> classifications);
+
+    long countPlantCardsByClassifications(Set<String> classifications);
+
+    List<CardResponseDto> findFilteredPlantCards(int limit, int offset, Set<String> classifications, String situation);
+
+    long countFilteredPlantCards(Set<String> classifications, String situation);
 }
