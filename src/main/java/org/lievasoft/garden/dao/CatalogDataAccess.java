@@ -16,16 +16,16 @@ public class CatalogDataAccess implements CatalogDao {
 
     private final JdbcClient jdbcClient;
 
-    public CatalogDataAccess(JdbcClient jdbcClient) {
-        this.jdbcClient = jdbcClient;
-    }
-
-    RowMapper<CardResponseDto> rowMapper = (ResultSet resultSet, int rowNum) ->
+    private final RowMapper<CardResponseDto> rowMapper = (ResultSet resultSet, int rowNum) ->
             new CardResponseDto(
                     resultSet.getLong("id"),
                     resultSet.getString("common_name"),
                     Situation.valueOf(resultSet.getString("situation").toUpperCase())
             );
+
+    public CatalogDataAccess(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
 
     @Override
     public List<CardResponseDto> findPlantCards(int limit, int offset) {
