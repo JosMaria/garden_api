@@ -17,7 +17,6 @@ CREATE SEQUENCE plant_sequence START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVAL
 
 CREATE TABLE IF NOT EXISTS plants (
     id BIGINT DEFAULT nextval('plant_sequence') PRIMARY KEY,
-    uuid VARCHAR(50) UNIQUE NOT NULL,
     common_name VARCHAR(50) UNIQUE NOT NULL,
     scientific_name VARCHAR(50),
     situation situation NOT NULL

@@ -20,10 +20,6 @@ public class Plant {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(nullable = false, unique = true, updatable = false, length = 50)
-    @Setter(AccessLevel.NONE)
-    private String uuid;
-
     @Column(unique = true, nullable = false, length = 50)
     private String commonName;
 

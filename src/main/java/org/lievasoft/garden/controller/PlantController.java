@@ -18,9 +18,7 @@ public class PlantController {
     private final PlantService plantService;
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody PlantCreateDto payload) {
-        // TODO: add more information to the header
-        plantService.persist(payload);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Boolean> save(@RequestBody PlantCreateDto payload) {
+        return new ResponseEntity<>(plantService.persist(payload), HttpStatus.CREATED);
     }
 }

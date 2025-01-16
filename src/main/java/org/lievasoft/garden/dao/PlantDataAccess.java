@@ -3,6 +3,7 @@ package org.lievasoft.garden.dao;
 import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.PlantCreateDto;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 public class PlantDataAccess implements PlantDao {
 
     private final JdbcClient jdbcClient;
+    private final KeyHolder keyHolder;
 
     @Override
     public boolean existsByCommonName(String commonName) {
@@ -30,18 +32,21 @@ public class PlantDataAccess implements PlantDao {
     }
 
     @Override
-    public int insertPlant(String uuid, PlantCreateDto dto) {
+    public long insertPlant(PlantCreateDto dto) {
         var statement = """
-                INSERT INTO plants (uuid, common_name, scientific_name, situation)
-                VALUES (:uuid, :commonName, :scientificName, cast(:situation AS situation));
+                INSERT INTO plants (common_name, scientific_name, situation)
+                VALUES (:commonName, :scientificName, cast(:situation AS situation));
                 """;
 
-        return jdbcClient.sql(statement)
-                .param("uuid", uuid)
+        jdbcClient.sql(statement)
                 .param("commonName", dto.commonName())
                 .param("scientificName", dto.scientificName())
-                .param("situation", dto.situation())
-                .update();
+                .param("situation", dto.situation().name().toLowerCase())
+                .update(keyHolder, "id");
+
+        return Optional.ofNullable(keyHolder.getKey())
+                .orElseThrow(() -> new IllegalArgumentException("Key not found"))
+                .longValue();
     }
 
     @Override
@@ -55,20 +60,5 @@ public class PlantDataAccess implements PlantDao {
                 .param("plantId", plantId)
                 .param("classification", classificationValue)
                 .update();
-    }
-
-    @Override
-    public Optional<Long> findPlantIdByUuidAndCommonName(String uuid, String commonName) {
-        var statement = """
-                SELECT id
-                FROM plants
-                WHERE uuid = :uuid AND common_name = :commonName;
-                """;
-
-        return jdbcClient.sql(statement)
-                .param("uuid", uuid)
-                .param("commonName", commonName)
-                .query((resultSet, rowNum) -> resultSet.getLong("id"))
-                .optional();
     }
 }
