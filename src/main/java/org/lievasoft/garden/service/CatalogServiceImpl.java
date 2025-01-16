@@ -1,5 +1,7 @@
 package org.lievasoft.garden.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lievasoft.garden.dao.CatalogDao;
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.dto.CatalogFilterDto;
@@ -18,15 +20,17 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class CatalogServiceImpl implements CatalogService {
 
     private final CatalogDao catalogDao;
 
-    public CatalogServiceImpl(CatalogDao catalogDao) {
-        this.catalogDao = catalogDao;
-    }
-
-    private final Function<Set<Classification>, Set<String>> convertClassification = classifications -> classifications.stream().map(classification -> classification.name().toLowerCase()).collect(Collectors.toSet());
+    private final Function<Set<Classification>, Set<String>> convertClassification =
+            classifications ->
+                    classifications.stream()
+                            .map(classification -> classification.name().toLowerCase())
+                            .collect(Collectors.toSet());
 
     private final Function<Situation, String> convertSituation = situation -> situation.name().toLowerCase();
 
@@ -63,6 +67,7 @@ public class CatalogServiceImpl implements CatalogService {
             }
         }
 
+        log.info("Number Page {} with content size {} returned", pageable.getPageNumber(), content.size());
         return new PageImpl<>(content, pageable, total);
     }
 }

@@ -1,6 +1,8 @@
 package org.lievasoft.garden.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lievasoft.garden.dao.PlantDao;
 import org.lievasoft.garden.dto.PlantCreateDto;
 import org.lievasoft.garden.entity.Classification;
@@ -11,13 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PlantServiceImpl implements PlantService {
 
     private final PlantDao plantDao;
-
-    public PlantServiceImpl(PlantDao plantDao) {
-        this.plantDao = plantDao;
-    }
 
     @Override
     public void persist(final PlantCreateDto payload) {
@@ -33,8 +33,7 @@ public class PlantServiceImpl implements PlantService {
 
         Assert.isTrue(!exists, () -> {
             String errorMessage = String.format("'%s' commonName already exists", commonName);
-            // TODO replace with LOG this output to console
-            System.out.println(errorMessage);
+            log.error(errorMessage);
             return errorMessage;
         });
     }
@@ -44,8 +43,7 @@ public class PlantServiceImpl implements PlantService {
 
         Assert.state(affectedRows == 1, () -> {
             String errorMessage = String.format("Plant with uuid '%s' has not been persisted", uuid);
-            // TODO replace with LOG this output to console
-            System.out.println(errorMessage);
+            log.error(errorMessage);
             return errorMessage;
         });
     }
@@ -58,8 +56,7 @@ public class PlantServiceImpl implements PlantService {
                             uuid,
                             commonName
                     );
-                    // TODO replace with LOG this output to console
-                    System.out.println(errorMessage);
+                    log.error(errorMessage);
                     return new EntityNotFoundException(errorMessage);
                 });
     }
@@ -71,8 +68,7 @@ public class PlantServiceImpl implements PlantService {
 
             Assert.state(affectedRows == 1, () -> {
                 String errorMessage = String.format("Classification with value '%s' has not been persisted", valueToInsert);
-                // TODO replace with LOG this output to console
-                System.out.println(errorMessage);
+                log.error(errorMessage);
                 return errorMessage;
             });
         });

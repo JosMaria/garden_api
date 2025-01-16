@@ -1,5 +1,6 @@
 package org.lievasoft.garden.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.PlantCreateDto;
 import org.lievasoft.garden.service.PlantService;
 import org.springframework.http.HttpStatus;
@@ -10,14 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/plant")
 public class PlantController {
 
     private final PlantService plantService;
-
-    public PlantController(PlantService plantService) {
-        this.plantService = plantService;
-    }
 
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody PlantCreateDto payload) {

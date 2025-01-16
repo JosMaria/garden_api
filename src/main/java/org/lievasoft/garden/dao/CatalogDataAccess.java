@@ -1,5 +1,6 @@
 package org.lievasoft.garden.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.CardResponseDto;
 import org.lievasoft.garden.entity.Situation;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
+@RequiredArgsConstructor
 public class CatalogDataAccess implements CatalogDao {
 
     private final JdbcClient jdbcClient;
@@ -22,10 +24,6 @@ public class CatalogDataAccess implements CatalogDao {
                     resultSet.getString("common_name"),
                     Situation.valueOf(resultSet.getString("situation").toUpperCase())
             );
-
-    public CatalogDataAccess(JdbcClient jdbcClient) {
-        this.jdbcClient = jdbcClient;
-    }
 
     @Override
     public List<CardResponseDto> findPlantCards(int limit, int offset) {

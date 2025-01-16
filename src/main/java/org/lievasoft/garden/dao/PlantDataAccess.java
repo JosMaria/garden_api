@@ -1,5 +1,6 @@
 package org.lievasoft.garden.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.lievasoft.garden.dto.PlantCreateDto;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -7,13 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class PlantDataAccess implements PlantDao {
 
     private final JdbcClient jdbcClient;
-
-    public PlantDataAccess(JdbcClient jdbcClient) {
-        this.jdbcClient = jdbcClient;
-    }
 
     @Override
     public boolean existsByCommonName(String commonName) {
