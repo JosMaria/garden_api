@@ -48,33 +48,39 @@ public class PlantServiceImpl implements PlantService {
 
         if (!plantDao.existsById(plantId)) {
             String message = String.format("Plant with ID '%s' does not exist", plantId);
-            log.info(message);
+            log.error(message);
             throw new EntityExistsException(message);
-        }
 
-        try {
-            Path directory = Paths.get(FOLDER_PATH + plantId);
-            if (!Files.exists(directory)) {
-                Files.createDirectory(directory);
+        } else {
+            try {
+                Path directory = Paths.get(FOLDER_PATH + plantId);
+                if (!Files.exists(directory)) {
+                    Files.createDirectory(directory);
+                }
+
+                boolean isFavorite = !imageDao.existsImageByPlantId(plantId);
+                Image imageToPersist = new Image();
+                imageToPersist.setName(file.getOriginalFilename());
+                imageToPersist.setType(file.getContentType());
+                imageToPersist.setPath(directory.toAbsolutePath().toString());
+                imageToPersist.setFavorite(isFavorite);
+
+                String returnedImageId = imageDao.insertImageByPlantId(plantId, imageToPersist);
+                saveImageToFileSystem(returnedImageId, file, directory);
+                return UUID.fromString(returnedImageId);
+
+            } catch (IOException ex) {
+                String message = "Could not upload image";
+                log.warn(message);
+                throw new RuntimeException(message);
             }
-
-            boolean isFavorite = !imageDao.existsImageByPlantId(plantId);
-
-            Image imageToPersist = new Image();
-            imageToPersist.setName(file.getOriginalFilename());
-            imageToPersist.setType(file.getContentType());
-            imageToPersist.setPath(directory.toAbsolutePath().toString());
-            imageToPersist.setFavorite(isFavorite);
-
-            String valueReturned = imageDao.insertImageByPlantId(plantId, imageToPersist);
-
-        } catch (IOException ex) {
-            String message = "Could not upload image";
-            log.warn(message);
-            throw new RuntimeException(message);
         }
+    }
 
-        return null;
+    private void saveImageToFileSystem(String imageId, MultipartFile file, Path directory) throws IOException {
+        Path filePath = directory.resolve(imageId);
+        Files.write(filePath, file.getBytes());
+        log.info("Image with ID '{}' uploaded successfully in the folder {}", imageId, filePath.toAbsolutePath());
     }
 
     private void insertClassifications(Long plantId, Set<Classification> classifications) {
