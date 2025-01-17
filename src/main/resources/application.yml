@@ -21,12 +21,18 @@ spring:
     baseline-description: "init"
     baseline-version: 0
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
 logging:
   level:
     org:
       hibernate:
         stat: debug
         type: trace
+
 server:
   error:
     include-binding-errors: always

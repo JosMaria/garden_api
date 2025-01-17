@@ -1,6 +1,7 @@
 package org.lievasoft.garden.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
@@ -15,6 +16,7 @@ public class Image {
 
     @Id
     @UuidGenerator
+    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @ManyToOne

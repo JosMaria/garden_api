@@ -23,7 +23,7 @@ public class PlantController {
         return new ResponseEntity<>(plantService.persist(payload), CREATED);
     }
 
-    @PostMapping(value = "/{plantId}/images", consumes = { "multipart/form-data" })
+    @PostMapping(value = "/{plantId}/images", consumes = {"multipart/form-data"})
     public ResponseEntity<UUID> uploadImage(@PathVariable("plantId") Long plantId, @RequestPart("image") MultipartFile file) {
         return new ResponseEntity<>(plantService.uploadImageToFileSystem(plantId, file), CREATED);
     }
