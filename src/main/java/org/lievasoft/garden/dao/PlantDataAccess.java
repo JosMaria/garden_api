@@ -32,6 +32,22 @@ public class PlantDataAccess implements PlantDao {
     }
 
     @Override
+    public boolean existsById(Long plantId) {
+        var statement = """
+                SELECT exists (
+                    SELECT id
+                    FROM plants
+                    WHERE id = :id
+                );
+                """;
+
+        return jdbcClient.sql(statement)
+                .param("id", plantId)
+                .query((resultSet, rowNum) -> resultSet.getBoolean("exists"))
+                .single();
+    }
+
+    @Override
     public long insertPlant(PlantCreateDto dto) {
         var statement = """
                 INSERT INTO plants (common_name, scientific_name, situation)
